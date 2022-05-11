@@ -14,6 +14,7 @@ from sklearn.model_selection import train_test_split
 from torch import nn
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
+from torch import optim
 import argparse
 import myModel
 
@@ -92,7 +93,7 @@ def main(learning_rate, num_epochs):
     net = myModel.Net(max_len*alpha_len, 1600, 1800, 2048)
 
     #hyperparam
-    optimizer = torch.optim.Adam(net.parameters(), lr=LEARNING_RATE)
+    optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE)
 
     #One batch step
     def train_one_epoch(epoch_index):

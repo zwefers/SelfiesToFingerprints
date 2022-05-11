@@ -57,6 +57,8 @@ def tanimotoLoss(outputs, labels):
 
 def main(learning_rate, num_epochs):
 
+    print("something")
+
     LEARNING_RATE = learning_rate
     NUM_EPOCHS = num_epochs
 

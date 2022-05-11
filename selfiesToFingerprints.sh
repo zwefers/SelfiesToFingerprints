@@ -7,5 +7,5 @@
 #SBATCH --output=/home/zwefers/projects/def-jeromew/zwefers/SelfiesToFingerprints/logs/selfiesToFingerprints_%A.out
 #SBATCH --error=/home/zwefers/projects/def-jeromew/zwefers/SelfiesToFingerprints/logs/selfiesToFingerprints_%A.err
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=4000M
+#SBATCH --mem=8000M
 python selfiesToFingerprint.py --learning_rate $1 --num_epochs $2

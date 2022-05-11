@@ -54,7 +54,10 @@ def tanimotoLoss(outputs, labels):
 
 
 
-def main(LEARNING_RATE, NUM_EPOCHS):
+def main(learning_rate, num_epochs):
+
+    LEARNING_RATE = learning_rate
+    NUM_EPOCHS = num_epochs
 
     #Get data
     train_data = pd.read_csv("moses_train.csv")

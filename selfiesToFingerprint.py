@@ -106,7 +106,7 @@ def main(learning_rate, num_epochs):
             selfies, smiles = sample
             
             inputs = sf.batch_selfies_to_flat_hot(selfies, vocab_stoi, pad_to_len=max_len)
-            inputs = torch.tensor(inputs).float()
+            inputs = torch.tensor(np.array(inputs)).float()
             
             labels = []
             for smile in smiles:
@@ -115,7 +115,7 @@ def main(learning_rate, num_epochs):
                 fp_arr = np.zeros((0,), dtype=np.float32)
                 DataStructs.ConvertToNumpyArray(fp,fp_arr)
                 labels.append(fp_arr)
-            labels = torch.tensor(labels)
+            labels = torch.tensor(np.array(labels))
             
             optimizer.zero_grad()       
             outputs = net(inputs)
@@ -146,7 +146,7 @@ def main(learning_rate, num_epochs):
             seflies, smiles = sample
 
             inputs = sf.batch_selfies_to_flat_hot(selfies, vocab_stoi, pad_to_len=max_len)
-            inputs = torch.tensor(inputs).float()
+            inputs = torch.tensor(np.array(inputs)).float()
             
             labels = []
             for smile in smiles:
@@ -155,7 +155,7 @@ def main(learning_rate, num_epochs):
                 fp_arr = np.zeros((0,), dtype=np.float32)
                 DataStructs.ConvertToNumpyArray(fp,fp_arr)
                 labels.append(fp_arr)
-            labels = torch.tensor(labels)
+            labels = torch.tensor(np.array(labels))
 
             pred_outputs = net(inputs)
             tuples = list(zip(pred_outputs, labels))

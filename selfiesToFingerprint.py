@@ -118,7 +118,6 @@ def main(learning_rate=0.01, num_epochs=5):
         
         running_vloss = 0.0
         for i, sample in enumerate(val_loader):
-            print(sample.size())
             inputs, labels = sample
 
             pred_outputs = net(inputs)

@@ -8,6 +8,8 @@ import torch
 import argparse
 import myModel
 import dataloader
+from torch.utils.tensorboard import SummaryWriter
+
 
 
 def fingerprint_from_smile(smile=str()):
@@ -32,8 +34,7 @@ def tanimotoLoss(outputs, labels):
     total_loss = 0
     for output, label in zipped:
         #specifying the batch size
-        #output = output > 0.5
-        
+        output = torch.round(outputs)
         N_AB = torch.dot(output, label).item()
         N_A = torch.sum(output).item()
         N_B = torch.sum(label).item()
@@ -75,6 +76,10 @@ def main(learning_rate=0.01, num_epochs=5):
     #hyperparam
     optimizer = torch.optim.Adam(net.parameters(), lr=LEARNING_RATE)
 
+    #set up tensorboard
+    log_dir = "logs"
+    writer = SummaryWriter(log_dir)
+
     #One batch step
     def train_one_epoch():
         running_loss = 0.
@@ -86,11 +91,12 @@ def main(learning_rate=0.01, num_epochs=5):
             outputs = net(inputs)
             lossFxn = nn.BCELoss()
             loss = lossFxn(outputs, labels)
+            writer.add_scalar("batchTrainBCELoss", loss.item(), i)
             loss.backward()
             optimizer.step()
 
-            losses = tanimotoLoss(pred_outputs, labels)
-            print(losses)
+            taniLoss = tanimotoLoss(pred_outputs, labels)
+            writer.add_scalar("batchTrainTaniLoss", taniLoss.item(), i)
 
             #reporting performance
             running_loss += loss.item()
@@ -113,12 +119,13 @@ def main(learning_rate=0.01, num_epochs=5):
             inputs, labels = sample
 
             pred_outputs = net(inputs)
-            losses = tanimotoLoss(pred_outputs, labels)
-            running_vloss +=losses
+            loss = tanimotoLoss(pred_outputs, labels)
+            writer.add_scalar("batchTrainTaniLoss", loss.item(), i)
+            running_vloss +=loss
 
         #report epoch loss and save model
         avg_loss = running_vloss/(i+1)
-        print("EPOCH " + str(epoch) + " Avg Tanimoto Loss: " + str(avg_loss)) 
+        print("EPOCH " + str(epoch + 1) + " Avg Tanimoto Loss: " + str(avg_loss)) 
         model_path = 'model_{}'.format(epoch)
         torch.save(net.state_dict(), model_path)
 

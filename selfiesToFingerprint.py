@@ -1,19 +1,9 @@
 import selfies as sf
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from rdkit.Chem import Draw
-from rdkit import RDLogger
 from rdkit.DataStructs.cDataStructs import TanimotoSimilarity
-from rdkit.Chem import DataStructs
-from rdkit.Chem.Draw import IPythonConsole
-import numpy as np
-import pandas as pd 
-import matplotlib.pyplot as plt
-from functools import partial
-from sklearn.model_selection import train_test_split
 from torch import nn
 from torch.utils.data import DataLoader
-from torch.autograd import Variable
 import torch
 import argparse
 import myModel
@@ -44,14 +34,14 @@ def tanimotoLoss(outputs, labels):
         #specifying the batch size
         #output = output > 0.5
         
-        N_AB = torch.dot(output, label)
-        N_A = torch.sum(output)
-        N_B = torch.sum(label)
+        N_AB = torch.dot(output, label).item()
+        N_A = torch.sum(output).item()
+        N_B = torch.sum(label).item()
         coeff = N_AB / (N_A + N_B - N_AB)
         loss = 1-coeff
         total_loss += loss
     
-    return total_loss/len(zipped)
+    return float(total_loss/len(zipped))
 
 
 
@@ -99,11 +89,13 @@ def main(learning_rate=0.01, num_epochs=5):
             loss.backward()
             optimizer.step()
 
+            losses = tanimotoLoss(pred_outputs, labels)
+            print(losses)
 
             #reporting performance
             running_loss += loss.item()
-            if i % 500 == 499:
-                last_loss = running_loss / 500 # loss per batch
+            if i % 100 == 99:
+                last_loss = running_loss / 100 # loss per batch
                 print('  batch {} loss: {}'.format(i + 1, last_loss))
                 running_loss = 0.0
         return last_loss

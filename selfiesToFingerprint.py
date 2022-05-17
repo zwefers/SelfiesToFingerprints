@@ -102,14 +102,15 @@ def main(learning_rate=0.01, num_epochs=5):
             running_loss += loss.item()
             if i % 100 == 99:
                 taniLoss = tanimotoLoss(outputs, labels)
-                writer.add_scalar("batchTrainTaniLoss", taniLoss, i)
+                writer.add_scalar("batchTrainTaniLoss", taniLoss, train_step)
+                train_step += 1
                 last_loss = running_loss / 100 # loss per batch
                 print('  batch {} loss: {}'.format(i + 1, last_loss))
                 writer.add_scalar("batchTrainBCELoss", last_loss, i)
                 running_loss = 0.0
         return last_loss
 
-
+    train_step= 0
     for epoch in range(NUM_EPOCHS):
         print('EPOCH {}:'.format(epoch + 1))
         net.train(True)
@@ -117,21 +118,25 @@ def main(learning_rate=0.01, num_epochs=5):
 
         net.train(False)
         
+        prev_loss = 0.0
         running_vloss = 0.0
         for i, sample in enumerate(val_loader):
             inputs, labels = sample
-
             pred_outputs = net(inputs)
             loss = tanimotoLoss(pred_outputs, labels)
             running_vloss +=loss
-        
+        if prev_loss < running_vloss:
+            model_path = 'model_{}'.format(epoch)
+            torch.save(net.state_dict(), model_path)  
+        prev_loss = running_vloss
 
         #report epoch loss and save model
         avg_loss = running_vloss/(i+1)
         writer.add_scalar("batchValTaniLoss", avg_loss, epoch)
         print("EPOCH " + str(epoch + 1) + " Avg Tanimoto Loss: " + str(avg_loss)) 
-        model_path = 'model_{}'.format(epoch)
-        torch.save(net.state_dict(), model_path)
+
+    model_path = 'final_model'
+    torch.save(net.state_dict(), model_path)   
 
 
 if __name__ == '__main__':

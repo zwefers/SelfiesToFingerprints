@@ -93,20 +93,19 @@ def main(learning_rate=0.01, num_epochs=5):
             outputs = net(inputs)
             lossFxn = nn.BCELoss()
             loss = lossFxn(outputs, labels)
-            if i % 100 == 99:
-                writer.add_scalar("batchTrainBCELoss", loss.item(), i)
             loss.backward()
             optimizer.step()
 
-            taniLoss = tanimotoLoss(outputs, labels)
-            if i % 100 == 99:
-                writer.add_scalar("batchTrainTaniLoss", taniLoss, i)
+            
 
             #reporting performance
             running_loss += loss.item()
             if i % 100 == 99:
+                taniLoss = tanimotoLoss(outputs, labels)
+                writer.add_scalar("batchTrainTaniLoss", taniLoss, i)
                 last_loss = running_loss / 100 # loss per batch
                 print('  batch {} loss: {}'.format(i + 1, last_loss))
+                writer.add_scalar("batchTrainBCELoss", last_loss, i)
                 running_loss = 0.0
         return last_loss
 
